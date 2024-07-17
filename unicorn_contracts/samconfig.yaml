@@ -3,9 +3,10 @@ version: 0.1
 default:
   global:
     parameters:
-      stack_name: uni-prop-local-contracts
-      s3_prefix: uni-prop-local-contracts
-      resolve_s3: true
+      stack_name: unicorn-properties-local-contracts
+      s3_bucket: 8586-terraform-state
+      s3_prefix: unicorn-properties-local-contracts
+      # resolve_s3: true
       resolve_image_repositories: true
   build:
     parameters:
