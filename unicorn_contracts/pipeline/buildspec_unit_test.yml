@@ -1,7 +1,12 @@
 version: 0.2
 phases:
-  build:
+  install:
+    runtime-versions:
+      python: 3.11
     commands:
       - cd "${PROJECT_SUBFOLDER}"
-      # trigger the unit tests here
-      - echo 'Running unit tests'
+      - pip install poetry
+      - poetry install
+  build:
+    commands:
+      - poetry run pytest tests/unit/
