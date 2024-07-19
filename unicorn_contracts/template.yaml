@@ -53,9 +53,13 @@ Globals:
     Environment:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
-        # SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
         SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        # POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        # POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
+        # POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]  # Debug log sampling percentage, default
+        # POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Metric Namespace
         LOG_LEVEL: INFO # Log level for Logger
+
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
@@ -348,33 +352,33 @@ Resources:
 
   #### EVENT BRIDGE PIPES
   # Pipe to transform a changed Contracts table record to ContractStatusChanged and publish it via the UnicornContractsEventBus
-  # ContractsTableStreamToEventPipe:
-  #   Type: AWS::Pipes::Pipe
-  #   Properties:
-  #     RoleArn: !GetAtt ContractsTableStreamToEventPipeRole.Arn
-  #     Source: !GetAtt ContractsTable.StreamArn
-  #     SourceParameters:
-  #       DynamoDBStreamParameters:
-  #         MaximumRetryAttempts: 3
-  #         BatchSize: 1
-  #         StartingPosition: LATEST
-  #         DeadLetterConfig:
-  #           Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
-  #       FilterCriteria:
-  #         Filters:
-  #           - Pattern: >-
-  #               # Add the filter pattern here
-  #     LogConfiguration:
-  #       CloudwatchLogsLogDestination:
-  #         LogGroupArn: !GetAtt ContractsTableStreamToEventPipeLogGroup.Arn
-  #       Level: ERROR
-  #     TargetParameters:
-  #       EventBridgeEventBusParameters:
-  #         DetailType: ContractStatusChanged
-  #         Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Replaced the hard coded namespace with SSM parameter
-  #       InputTemplate: |-
-  #         # Add the InputTemplate here
-  #     Target: !GetAtt UnicornContractsEventBus.Arn
+  ContractsTableStreamToEventPipe:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt ContractsTableStreamToEventPipeRole.Arn
+      Source: !GetAtt ContractsTable.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          MaximumRetryAttempts: 3
+          BatchSize: 1
+          StartingPosition: LATEST
+          DeadLetterConfig:
+            Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
+        FilterCriteria:
+          Filters:
+            - Pattern: >-
+                {"eventName":["INSERT","MODIFY"],"dynamodb":{"NewImage":{"contract_status":{"S":["DRAFT","APPROVED"]}}}}
+      LogConfiguration:
+        CloudwatchLogsLogDestination:
+          LogGroupArn: !GetAtt ContractsTableStreamToEventPipeLogGroup.Arn
+        Level: ERROR
+      TargetParameters:
+        EventBridgeEventBusParameters:
+          DetailType: ContractStatusChanged
+          Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Replaced the hard coded namespace with SSM parameter
+        InputTemplate: |-
+          {"property_id": <$.dynamodb.Keys.property_id.S>,"contract_id": <$.dynamodb.NewImage.contract_id.S>,"contract_status": <$.dynamodb.NewImage.contract_status.S>,"contract_last_modified_on":  <$.dynamodb.NewImage.contract_last_modified_on.S>}
+      Target: !GetAtt UnicornContractsEventBus.Arn
 
   ContractsTableStreamToEventPipeLogGroup:
     Type: AWS::Logs::LogGroup
