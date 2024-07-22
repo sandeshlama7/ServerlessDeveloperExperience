@@ -46,6 +46,6 @@ def lambda_context():
     context._aws_request_id="6f970d26-71d6-4c87-a196-9375f85c7b07"
     context._log_group_name="/aws/lambda/contractsService-LambdaFunction-IWaQgsTEtLtX"
     context._log_stream_name="2022/07/14/[$LATEST]7c71ca59882b4c569dd007c7e41c81e8"
-    # context._identity=CognitoIdentity([cognito_identity_id=None,cognito_identity_pool_id=None])])
-    # context._client_context=None
+    context._identity=CognitoIdentity([cognito_identity_id=None,cognito_identity_pool_id=None])])
+    context._client_context=None
     return context

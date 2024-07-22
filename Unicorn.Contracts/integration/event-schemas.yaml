@@ -50,7 +50,7 @@ Resources:
   ContractStatusChangedEventSchema:
     Type: AWS::EventSchemas::Schema
     Properties:
-      Type: 'OpenApi3'
+      Type: OpenApi3
       RegistryName:
         Fn::GetAtt: EventRegistry.RegistryName
       SchemaName:
@@ -125,4 +125,3 @@ Resources:
                 }
               }
             }
-          }

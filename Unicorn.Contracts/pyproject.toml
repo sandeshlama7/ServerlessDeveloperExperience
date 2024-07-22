@@ -8,6 +8,7 @@ packages = [{ include = "contracts_service", from = "src" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 boto3 = "^1.28"
+aws-lambda-powertools = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
