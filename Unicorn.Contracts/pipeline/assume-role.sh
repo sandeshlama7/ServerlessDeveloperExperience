@@ -10,7 +10,7 @@ unset AWS_SESSION_TOKEN
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
 
-cred=$(aws sts assume-role --role-arn "$ROLE" \
+cred=$(aws sts assume-role --role-arn "arn:aws:iam::426857564226:role/Github-OIDC-role" \
                            --role-session-name "$SESSION_NAME" \
                            --query '[Credentials.AccessKeyId,Credentials.SecretAccessKey,Credentials.SessionToken]' \
                            --output text)
