@@ -27,13 +27,13 @@ Metadata:
 Parameters:
   ProjectSubfolder:
     Type: String
-    Default: "Unicorn.Contracts"
-  CodeCommitRepositoryName:
+    Default: "unicorn_contracts"
+  GithubRepositoryName:
     Type: String
-    Default: "Unicorn.Contracts"
+    Default: "ServerlessDeveloperExperience"
   MainGitBranch:
     Type: String
-    Default: "main"
+    Default: "INTERN-816"
   MonorepoSsmPrefix:
     Type: String
     Default: "Monorepo"
@@ -81,13 +81,13 @@ Resources:
           Actions:
             - Name: SourceCodeRepo
               ActionTypeId:
-                Version: "1"
+                Version: "2"
                 Category: Source
-                Owner: AWS
-                Provider: CodeCommit
+                Owner: ThirdParty
+                Provider: Github
               Configuration:
                 BranchName: !Ref MainGitBranch
-                RepositoryName: !Ref CodeCommitRepositoryName
+                RepositoryName: !Ref GithubRepositoryName
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: SourceCodeAsZip
@@ -310,18 +310,18 @@ Resources:
                 Action:
                   - "iam:PassRole"
                 Resource: "*"
-        - PolicyName: CodeCommitAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - codecommit:CancelUploadArchive
-                  - codecommit:GetBranch
-                  - codecommit:GetCommit
-                  - codecommit:GetUploadArchiveStatus
-                  - codecommit:UploadArchive
-                Resource: !Sub "arn:${AWS::Partition}:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeCommitRepositoryName}"
+        # - PolicyName: CodeCommitAccess
+        #   PolicyDocument:
+        #     Version: "2012-10-17"
+        #     Statement:
+        #       - Effect: Allow
+        #         Action:
+        #           - codecommit:CancelUploadArchive
+        #           - codecommit:GetBranch
+        #           - codecommit:GetCommit
+        #           - codecommit:GetUploadArchiveStatus
+        #           - codecommit:UploadArchive
+        #         Resource: !Sub "arn:${AWS::Partition}:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeCommitRepositoryName}"
         - PolicyName: CodePipelineCodeAndS3Bucket
           PolicyDocument:
             Version: "2012-10-17"
@@ -518,12 +518,12 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: !Sub "${ProjectSubfolder}/pipeline/buildspec_deploy.yml"
 
-  #    _____                      __________                      
-  #   /     \   ____   ____   ____\______   \ ____ ______   ____  
-  #  /  \ /  \ /  _ \ /    \ /  _ \|       _// __ \\____ \ /  _ \ 
+  #    _____                      __________
+  #   /     \   ____   ____   ____\______   \ ____ ______   ____
+  #  /  \ /  \ /  _ \ /    \ /  _ \|       _// __ \\____ \ /  _ \
   # /    Y    (  <_> )   |  (  <_> )    |   \  ___/|  |_> >  <_> )
-  # \____|__  /\____/|___|  /\____/|____|_  /\___  >   __/ \____/ 
-  #         \/            \/              \/     \/|__|           
+  # \____|__  /\____/|___|  /\____/|____|_  /\___  >   __/ \____/
+  #         \/            \/              \/     \/|__|
   MonorepoTriggerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -603,8 +603,8 @@ Resources:
           PIPELINE_NAME: !Ref Pipeline
           APP_DIR_IN_MONOREPO: !Ref ProjectSubfolder
       Policies:
-        - CodeCommitReadPolicy: 
-            RepositoryName: !Ref CodeCommitRepositoryName
+        # - CodeCommitReadPolicy:
+        #     RepositoryName: !Ref CodeCommitRepositoryName
         - SSMParameterReadPolicy:
             ParameterName: !Sub "${MonorepoSsmPrefix}/*"
         - Statement:
@@ -615,24 +615,24 @@ Resources:
             - Effect: Allow
               Action: codepipeline:StartPipelineExecution
               Resource: !Sub "arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:*"
-      Events:
-        EBRule:
-          Type: EventBridgeRule
-          Properties:
-            DeadLetterConfig:
-              Type: SQS
-            Pattern:
-              source: [aws.codecommit]
-              detail-type: ['CodeCommit Repository State Change']
-              resources: [!Sub "arn:${AWS::Partition}:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeCommitRepositoryName}"]
-              detail:
-                event:
-                  - referenceCreated
-                  - referenceUpdated
-                referenceType:
-                  - branch
-                referenceName:
-                  - !Ref MainGitBranch
+      # Events:
+      #   EBRule:
+      #     Type: EventBridgeRule
+      #     Properties:
+      #       DeadLetterConfig:
+      #         Type: SQS
+      #       Pattern:
+      #         source: [aws.codecommit]
+      #         detail-type: ['CodeCommit Repository State Change']
+      #         resources: [!Sub "arn:${AWS::Partition}:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeCommitRepositoryName}"]
+      #         detail:
+      #           event:
+      #             - referenceCreated
+      #             - referenceUpdated
+      #           referenceType:
+      #             - branch
+      #           referenceName:
+      #             - !Ref MainGitBranch
 
 Outputs:
   CodePipelineUrl:
