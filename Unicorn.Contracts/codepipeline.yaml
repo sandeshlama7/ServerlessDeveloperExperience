@@ -27,7 +27,7 @@ Metadata:
 Parameters:
   ProjectSubfolder:
     Type: String
-    Default: "unicorn_contracts"
+    Default: "Unicorn.Contracts"
   GithubRepositoryName:
     Type: String
     Default: "sandeshlama7/ServerlessDeveloperExperience"
