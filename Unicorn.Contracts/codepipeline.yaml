@@ -30,7 +30,7 @@ Parameters:
     Default: "unicorn_contracts"
   GithubRepositoryName:
     Type: String
-    Default: "ServerlessDeveloperExperience"
+    Default: "sandeshlama7/ServerlessDeveloperExperience"
   MainGitBranch:
     Type: String
     Default: "INTERN-816"
@@ -60,6 +60,12 @@ Parameters:
   ProdCloudFormationExecutionExeRole:
     Type: String
     Default: "arn:aws:iam::426857564226:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionRo-S9R3s1pYixtV"
+  CodeStarServicePolicyArn:
+    Type: String
+    Default: "arn:aws:iam::aws:policy/service-role/AWSCodeStarServiceRole"
+  GithubConnectionArn:
+    Type: String
+    Default: "arn:aws:codeconnections:us-east-1:426857564226:connection/3c93e9b3-cd7f-4623-b29b-aa49ee8c2521"
 
 Resources:
   #  ____  _            _ _
@@ -79,16 +85,16 @@ Resources:
       Stages:
         - Name: Source
           Actions:
-            - Name: SourceCodeRepo
+            - Name: GithubRepo
               ActionTypeId:
-                Version: "2"
+                Version: 1
                 Category: Source
-                Owner: ThirdParty
-                Provider: Github
+                Owner: AWS
+                Provider: CodeStarSourceConnection
               Configuration:
                 BranchName: !Ref MainGitBranch
-                RepositoryName: !Ref GithubRepositoryName
-                PollForSourceChanges: false
+                FullRepositoryId: !Ref GithubRepositoryName
+                ConnectionArn: !Ref GithubConnectionArn
               OutputArtifacts:
                 - Name: SourceCodeAsZip
               RunOrder: 1
@@ -301,6 +307,10 @@ Resources:
             Principal:
               Service:
                 - codepipeline.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - !Ref CodeStarServicePolicyArn
+
       Policies:
         - PolicyName: CodePipelineAccess
           PolicyDocument:
