@@ -26,14 +26,6 @@ s3_prefix = "unicorn-properties-prod-contracts"
 s3_bucket = ""
 region = "us-east-1"
 
-[1.deploy]
-[1.deploy.parameters]
-template = "packaged-testing.yaml"
-fail_on_empty_changeset = false
-capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
-parameter_overrides = "Stage=prod"
-
-
 # ############################################## #
 
 [pipeline]
