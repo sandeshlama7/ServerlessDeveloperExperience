@@ -1,0 +1,12 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - cd "${PROJECT_SUBFOLDER}"
+      - pip install poetry
+      - poetry install 
+  build:
+    commands:
+      - poetry run pytest tests/unit/

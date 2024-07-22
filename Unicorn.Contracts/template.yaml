@@ -54,7 +54,12 @@ Globals:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
         SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        # POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        # POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
+        # POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]  # Debug log sampling percentage, default
+        # POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Metric Namespace
         LOG_LEVEL: INFO # Log level for Logger
+
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
@@ -67,14 +72,14 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBus
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusSandesh
       Value: !GetAtt UnicornContractsEventBus.Name
 
   UnicornContractsEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArn
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArnSandesh
       Value: !GetAtt UnicornContractsEventBus.Arn
 
   #### LAMBDA FUNCTIONS
@@ -82,6 +87,7 @@ Resources:
   ContractEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Tracing: Active
       CodeUri: src/
       Handler: contracts_service.contract_event_handler.lambda_handler
       Policies:
@@ -100,12 +106,21 @@ Resources:
               MaximumConcurrency: 5
 
   # Add ContractEventHandlerFunctionLogGroup
+  ContractEventHandlerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractEventHandlerFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
 
   #### API GATEWAY REST API
   UnicornContractsApi:
     Type: AWS::Serverless::Api
     DependsOn: ContractsApiGwAccountConfig
     Properties:
+      TracingEnabled: true
       StageName: !Ref Stage
       EndpointConfiguration:
         Type: REGIONAL
@@ -192,7 +207,7 @@ Resources:
     Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
-      QueueName: !Sub UnicornContractsIngestQueue-${Stage}
+      QueueName: !Sub UnicornContractsIngestQueue-${Stage}-Sandesh
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt UnicornContractsIngestDLQ.Arn
         maxReceiveCount: 1
@@ -214,7 +229,7 @@ Resources:
     Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
-      QueueName: !Sub UnicornContractsIngestDLQ-${Stage}
+      QueueName: !Sub UnicornContractsIngestDLQ-${Stage}-Sandesh
       Tags:
         - Key: stage
           Value: !Ref Stage
@@ -252,14 +267,14 @@ Resources:
   UnicornContractsEventBus:
     Type: AWS::Events::EventBus
     Properties:
-      Name: !Sub UnicornContractsBus-${Stage}
+      Name: !Sub UnicornContractsBus-${Stage}-Sandesh
 
   # Event bus policy to restrict who can publish events (should only be services from UnicornContractsNamespace)
   ContractEventsBusPublishPolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Ref UnicornContractsEventBus
-      StatementId: !Sub OnlyContactsServiceCanPublishToEventBus-${Stage}
+      StatementId: !Sub OnlyContactsServiceCanPublishToEventBus-${Stage}-Sandesh
       Statement:
         Effect: Allow
         Principal:
@@ -298,7 +313,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub
-        - "/aws/events/${Stage}/${NS}-catchall"
+        - "/aws/events/${Stage}/${NS}-catchall-Sandesh"
         - Stage: !Ref Stage
           NS: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
       RetentionInDays: !FindInMap
@@ -337,33 +352,33 @@ Resources:
 
   #### EVENT BRIDGE PIPES
   # Pipe to transform a changed Contracts table record to ContractStatusChanged and publish it via the UnicornContractsEventBus
-  # ContractsTableStreamToEventPipe:
-  #   Type: AWS::Pipes::Pipe
-  #   Properties:
-  #     RoleArn: !GetAtt ContractsTableStreamToEventPipeRole.Arn
-  #     Source: !GetAtt ContractsTable.StreamArn
-  #     SourceParameters:
-  #       DynamoDBStreamParameters:
-  #         MaximumRetryAttempts: 3
-  #         BatchSize: 1
-  #         StartingPosition: LATEST
-  #         DeadLetterConfig:
-  #           Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
-  #       FilterCriteria:
-  #         Filters:
-  #           - Pattern: >-
-  #               # Add the filter pattern here
-  #     LogConfiguration:
-  #       CloudwatchLogsLogDestination:
-  #         LogGroupArn: !GetAtt ContractsTableStreamToEventPipeLogGroup.Arn
-  #       Level: ERROR
-  #     TargetParameters:
-  #       EventBridgeEventBusParameters:
-  #         DetailType: ContractStatusChanged
-  #         Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Replaced the hard coded namespace with SSM parameter
-  #       InputTemplate: |-
-  #         # Add the InputTemplate here
-  #     Target: !GetAtt UnicornContractsEventBus.Arn
+  ContractsTableStreamToEventPipe:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt ContractsTableStreamToEventPipeRole.Arn
+      Source: !GetAtt ContractsTable.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          MaximumRetryAttempts: 3
+          BatchSize: 1
+          StartingPosition: LATEST
+          DeadLetterConfig:
+            Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
+        FilterCriteria:
+          Filters:
+            - Pattern: >-
+                {"eventName":["INSERT","MODIFY"],"dynamodb":{"NewImage":{"contract_status":{"S":["DRAFT","APPROVED"]}}}}
+      LogConfiguration:
+        CloudwatchLogsLogDestination:
+          LogGroupArn: !GetAtt ContractsTableStreamToEventPipeLogGroup.Arn
+        Level: ERROR
+      TargetParameters:
+        EventBridgeEventBusParameters:
+          DetailType: ContractStatusChanged
+          Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}" # Replaced the hard coded namespace with SSM parameter
+        InputTemplate: |-
+          {"property_id": <$.dynamodb.Keys.property_id.S>,"contract_id": <$.dynamodb.NewImage.contract_id.S>,"contract_status": <$.dynamodb.NewImage.contract_status.S>,"contract_last_modified_on":  <$.dynamodb.NewImage.contract_last_modified_on.S>}
+      Target: !GetAtt UnicornContractsEventBus.Arn
 
   ContractsTableStreamToEventPipeLogGroup:
     Type: AWS::Logs::LogGroup
@@ -417,7 +432,7 @@ Resources:
     Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
-      QueueName: !Sub ContractsTableStreamToEventPipeDLQ-${Stage}
+      QueueName: !Sub ContractsTableStreamToEventPipeDLQ-${Stage}-Sandesh
       Tags:
         - Key: stage
           Value: !Ref Stage
