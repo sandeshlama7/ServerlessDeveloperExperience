@@ -5,7 +5,7 @@ version = 0.1
 [1.global.parameters]
 stack_name = "unicorn-properties-dev-contracts"
 s3_prefix = "unicorn-properties-dev-contracts"
-s3_bucket = "arn:aws:s3:::aws-sam-cli-managed-dev-pipeline-r-artifactsbucket-jokwgdwov3hr"
+s3_bucket = "aws-sam-cli-managed-dev-pip-artifactsloggingbucket-fpxwjv2c2x7m"
 region = "us-east-1"
 
 [1.deploy]
@@ -23,7 +23,7 @@ parameter_overrides = "Stage=dev"
 [2.global.parameters]
 stack_name = "unicorn-properties-prod-contracts"
 s3_prefix = "unicorn-properties-prod-contracts"
-s3_bucket = "arn:aws:s3:::aws-sam-cli-managed-dev-pipeline-r-artifactsbucket-jokwgdwov3hr"
+s3_bucket = "aws-sam-cli-managed-dev-pip-artifactsloggingbucket-fpxwjv2c2x7m"
 region = "us-east-1"
 
 # ############################################## #
