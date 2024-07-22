@@ -17,6 +17,7 @@ moto = "^4.1.13"
 importlib-metadata = "^6.8.0"
 pyyaml = "^6.0.1"
 arnparse = "^0.0.2"
+aws-lambda-powertools = "^2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -29,6 +30,3 @@ testpaths = ["tests/unit", "tests/integration"]
 
 [tool.ruff]
 line-length = 150
-
-[aws_powertools]
-aws-lambda-powertools = "^2.0"
