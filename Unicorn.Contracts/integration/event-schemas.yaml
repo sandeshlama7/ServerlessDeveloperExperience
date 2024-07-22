@@ -49,6 +49,7 @@ Resources:
 
   ContractStatusChangedEventSchema:
     Type: AWS::EventSchemas::Schema
+    DependsOn: EventRegistry
     Properties:
       Type: OpenApi3
       RegistryName:
