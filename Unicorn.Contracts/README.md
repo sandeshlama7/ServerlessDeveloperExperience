@@ -4,7 +4,7 @@
 
 ## Architecture overview
 
-Unicorn Contract manages the contractual relationship between the customers and the Unicorn Properties agency. It's primary function is to allow Unicorn Properties agents to create a new contract for a property listing, and to have the contract approved once it's ready.
+Unicorn Contract manages the contractual relationship between the customers and the Unicorn Properties agency. It's primary function is to allow Unicorn Properties agents to create a new contract for a property listing, and to have the contract approved once it's ready. 
 
 The architecture is fairly straight forward. An API exposes the create contract and update contract methods. This information is recorded in a Amazon DynamoDB table which will contain all latest information about the contract and it's status.
 
