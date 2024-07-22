@@ -23,7 +23,7 @@ parameter_overrides = "Stage=dev"
 [2.global.parameters]
 stack_name = "unicorn-properties-prod-contracts"
 s3_prefix = "unicorn-properties-prod-contracts"
-s3_bucket = "unicorn-properties-contrac-pipelineartifactsbucket-wbg13ekedut7"
+s3_bucket = "8586-terraform-state"
 region = "us-east-1"
 
 # ############################################## #
