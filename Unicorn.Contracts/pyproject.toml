@@ -31,4 +31,4 @@ testpaths = ["tests/unit", "tests/integration"]
 line-length = 150
 
 [aws_powertools]
-aws-lambda-powertools = "2.41.0"
+aws_lambda_powertools = "2.41.0"
