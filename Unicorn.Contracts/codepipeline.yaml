@@ -222,8 +222,8 @@ Resources:
                     {"name": "ENV_CLOUDFORMATION_EXECUTION_ROLE", "value": "${ProdCloudFormationExecutionExeRole}"}
                   ]
               InputArtifacts:
-                # - Name: BuildArtifactAsZip
-                - Name: SourceCodeAsZip
+                - Name: BuildArtifactAsZip
+                # - Name: SourceCodeAsZip
 
   PipelineArtifactsBucket:
     Type: AWS::S3::Bucket
