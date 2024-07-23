@@ -26,6 +26,7 @@ s3_prefix = "unicorn-properties-prod-contracts"
 s3_bucket = "aws-sam-cli-managed-dev-pip-artifactsloggingbucket-fpxwjv2c2x7m"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=prod"
 
 # ############################################## #
 
@@ -38,3 +39,4 @@ resolve_s3 = true
 fail_on_empty_changeset = false
 template = "codepipeline.yaml"
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=prod"
