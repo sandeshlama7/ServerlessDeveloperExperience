@@ -56,8 +56,8 @@ Parameters:
     Default: "2"
   ProdPipelineExecutionRole:
     Type: String
-    # Default: "arn:aws:iam::426857564226:role/PipelineRole"
-    Default: "arn:aws:iam::426857564226:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-GXxusmB5A31Q"
+    Default: "arn:aws:iam::426857564226:role/PipelineRole"
+    # Default: "arn:aws:iam::426857564226:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-GXxusmB5A31Q"
   ProdCloudFormationExecutionExeRole:
     Type: String
     Default: "arn:aws:iam::426857564226:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionRo-S9R3s1pYixtV"
