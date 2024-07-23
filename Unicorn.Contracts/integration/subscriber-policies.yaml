@@ -25,8 +25,8 @@ Resources:
     Properties:
       EventBusName:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusSandesh}}"
-      StatementId: ContractServiceRule-Sandesh
-        # Fn::Sub: "OnlyRulesForContractServiceEvents-${Stage}-Sandesh"
+      StatementId:
+        Fn::Sub: "OnlyRulesForContractServiceEvents-${Stage}-Sandesh"
       Statement:
         Effect: Allow
         Principal:
@@ -44,7 +44,7 @@ Resources:
           - Fn::Sub:
               - arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${eventBusName}/*
 
-              - eventBusName: 
+              - eventBusName:
                   Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusSandesh}}"
         Condition:
           StringEqualsIfExists:

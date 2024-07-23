@@ -49,7 +49,9 @@ Resources:
 
   ContractStatusChangedEventSchema:
     Type: AWS::EventSchemas::Schema
-    DependsOn: EventRegistry
+    DependsOn:
+      - EventRegistry
+      - EventRegistryPolicy
     Properties:
       Type: OpenApi3
       RegistryName:
@@ -57,72 +59,88 @@ Resources:
       SchemaName:
         Fn::Sub: "${EventRegistry.RegistryName}@ContractStatusChanged"
       Description: 'The schema for a request to publish a property'
-      Content: >
-            {
-            "openapi": "3.0.0",
-            "info": {
-              "version": "1.0.0",
-              "title": "ContractStatusChanged"
-            },
-            "paths": {},
-            "components": {
-              "schemas": {
-                "AWSEvent": {
-                  "type": "object",
-                  "required": ["detail-type", "resources", "detail", "id", "source", "time", "region", "version", "account"],
-                  "x-amazon-events-detail-type": "ContractStatusChanged",
-                  "x-amazon-events-source": "uni-prop-prod-shared",
-                  "properties": {
-                    "detail": {
-                      "$ref": "#/components/schemas/ContractStatusChanged"
-                    },
-                    "account": {
-                      "type": "string"
-                    },
-                    "detail-type": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "string"
-                    },
-                    "region": {
-                      "type": "string"
-                    },
-                    "resources": {
-                      "type": "array",
-                      "items": {
-                        "type": "object"
-                      }
-                    },
-                    "source": {
-                      "type": "string"
-                    },
-                    "time": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "version": {
-                      "type": "string"
+      Content: |
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "version": "1.0.0",
+            "title": "ContractStatusChanged"
+          },
+          "paths": {},
+          "components": {
+            "schemas": {
+              "AWSEvent": {
+                "type": "object",
+                "required": [
+                  "detail-type",
+                  "resources",
+                  "detail",
+                  "id",
+                  "source",
+                  "time",
+                  "region",
+                  "version",
+                  "account"
+                ],
+                "x-amazon-events-detail-type": "ContractStatusChanged",
+                "x-amazon-events-source": "uni-prop-prod-shared",
+                "properties": {
+                  "detail": {
+                    "$ref": "#/components/schemas/ContractStatusChanged"
+                  },
+                  "account": {
+                    "type": "string"
+                  },
+                  "detail-type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
                     }
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "version": {
+                    "type": "string"
                   }
-                },
-                "ContractStatusChanged": {
-                  "type": "object",
-                  "required": ["contract_last_modified_on", "contract_id", "contract_status", "property_id"],
-                  "properties": {
-                    "contract_id": {
-                      "type": "string"
-                    },
-                    "contract_last_modified_on": {
-                      "type": "string"
-                    },
-                    "contract_status": {
-                      "type": "string"
-                    },
-                    "property_id": {
-                      "type": "string"
-                    }
+                }
+              },
+              "ContractStatusChanged": {
+                "type": "object",
+                "required": [
+                  "contract_last_modified_on",
+                  "contract_id",
+                  "contract_status",
+                  "property_id"
+                ],
+                "properties": {
+                  "contract_id": {
+                    "type": "string"
+                  },
+                  "contract_last_modified_on": {
+                    "type": "string"
+                  },
+                  "contract_status": {
+                    "type": "string"
+                  },
+                  "property_id": {
+                    "type": "string"
                   }
                 }
               }
             }
+          }
+        }

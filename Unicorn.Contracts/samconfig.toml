@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "unicorn-properties-dev-contracts"
+resolve_s3 = true
+s3_prefix = "unicorn-properties-dev-contracts"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+disable_rollback = true
+parameter_overrides = "Stage=\"dev\""
+image_repositories = []
