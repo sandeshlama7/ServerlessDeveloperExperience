@@ -71,17 +71,7 @@ Resources:
             "schemas": {
               "AWSEvent": {
                 "type": "object",
-                "required": [
-                  "detail-type",
-                  "resources",
-                  "detail",
-                  "id",
-                  "source",
-                  "time",
-                  "region",
-                  "version",
-                  "account"
-                ],
+                "required": ["detail-type", "resources", "detail", "id", "source", "time", "region", "version", "account"],
                 "x-amazon-events-detail-type": "ContractStatusChanged",
                 "x-amazon-events-source": "uni-prop-prod-shared",
                 "properties": {
@@ -120,12 +110,7 @@ Resources:
               },
               "ContractStatusChanged": {
                 "type": "object",
-                "required": [
-                  "contract_last_modified_on",
-                  "contract_id",
-                  "contract_status",
-                  "property_id"
-                ],
+                "required": ["contract_last_modified_on", "contract_id", "contract_status", "property_id"],
                 "properties": {
                   "contract_id": {
                     "type": "string"
