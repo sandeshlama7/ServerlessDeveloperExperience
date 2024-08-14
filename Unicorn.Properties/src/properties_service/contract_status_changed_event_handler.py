@@ -1,13 +1,17 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-from schema.uni_prop_prod_shared_dev_sandesh.contractstatuschanged import (
-AWSEvent, ContractStatusChanged, Marshaller)
-
 
 import os
 from datetime import datetime
 
 import boto3
+
+from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged import (
+AWSEvent, ContractStatusChanged, Marshaller)
+
+# from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.marshaller import Marshaller
+# from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.AWSEvent import AWSEvent
+# from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.ContractStatusChanged import ContractStatusChanged
 
 
 # Initialise Environment variables

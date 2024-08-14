@@ -1,0 +1,7 @@
+# coding: utf-8
+
+from __future__ import absolute_import
+
+from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.marshaller import Marshaller
+from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.AWSEvent import AWSEvent
+from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.ContractStatusChanged import ContractStatusChanged

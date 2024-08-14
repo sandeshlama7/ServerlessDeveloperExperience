@@ -20,7 +20,7 @@ Resources:
       Name: unicorn.properties-ContractStatusChanged
       Description: Contract Status Changed subscription
       EventBusName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArnSandesh}}"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusSandesh}}"
       EventPattern:
         source:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"

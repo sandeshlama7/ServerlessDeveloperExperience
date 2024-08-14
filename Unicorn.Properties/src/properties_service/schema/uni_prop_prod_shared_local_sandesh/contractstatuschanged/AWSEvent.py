@@ -4,7 +4,7 @@ import re  # noqa: F401
 
 import six
 from enum import Enum
-from schema.uni_prop_prod_shared_dev_sandesh.contractstatuschanged.ContractStatusChanged import ContractStatusChanged  # noqa: F401,E501
+from schema.uni_prop_prod_shared_local_sandesh.contractstatuschanged.ContractStatusChanged import ContractStatusChanged  # noqa: F401,E501
 
 class AWSEvent(object):
 

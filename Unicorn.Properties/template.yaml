@@ -40,6 +40,7 @@ Conditions:
     - Prod
 Globals:
   Function:
+    Tracing: Active
     Runtime: python3.11
     MemorySize: 128
     Timeout: 15
@@ -78,17 +79,21 @@ Resources:
       CodeUri: src/
       Handler: properties_service.contract_status_changed_event_handler.lambda_handler
       Policies:
-        DynamoDBReadPolicy:
-          TableName: !Ref ContractStatusTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractStatusTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref ContractStatusTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt PropertiesServiceDLQ.QueueName
+
       Events:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            EventBusName: UnicornContractsBus-dev-Sandesh
+            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
-                # - uni-prop-prod-shared-dev-Sandesh
-                - !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}-dev-Sandesh"
+                - !Sub "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
               detail-type:
                 - ContractStatusChanged
       EventInvokeConfig:
@@ -213,6 +218,15 @@ Resources:
   ApprovalStateMachine:
     Type: 'AWS::Serverless::StateMachine'
     Properties:
+      DefinitionSubstitutions:
+        ContractExistsChecker: !GetAtt ContractExistsCheckerFunction.Arn
+        WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
+        ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
+        # ImageUploadBucketName: !Sub >-
+        #   {{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}
+        ImageUploadBucketName: 8586-terraform-state
+        EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+        ServiceName: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
       Tracing:
         Enabled: true
       Name: !Sub '${AWS::StackName}-ApprovalStateMachine'
@@ -248,6 +262,20 @@ Resources:
               LogGroupArn: !GetAtt ApprovalStateMachineLogGroup.Arn
         Level: ALL
         IncludeExecutionData: true
+
+      Events:
+        TriggerEvent:
+          Type: EventBridgeRule
+          Properties:
+            RuleName: unicorn.properties-PublicationApprovalRequested
+            EventBusName:  !GetAtt UnicornPropertiesEventBus.Name
+              # Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusSandesh}}"
+            Pattern:
+              source:
+                - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
+              detail-type:
+                - PublicationApprovalRequested
+
   ApprovalStateMachineLogGroup:
     Type: 'AWS::Logs::LogGroup'
     UpdateReplacePolicy: Delete

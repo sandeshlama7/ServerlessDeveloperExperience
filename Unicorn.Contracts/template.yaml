@@ -82,6 +82,27 @@ Resources:
       Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArnSandesh
       Value: !GetAtt UnicornContractsEventBus.Arn
 
+  # UnicornContractsNamespace:
+  #   Type: AWS::SSM::Parameter
+  #   Properties:
+  #     Type: String
+  #     Name: UnicornContractsNamespace
+  #     Value: "UnicornContracts"
+
+  # UnicornPropertiesNamespace:
+  #   Type: AWS::SSM::Parameter
+  #   Properties:
+  #     Type: String
+  #     Name: UnicornPropertiesNamespace
+  #     Value: "UnicornProperties"
+
+  # UnicornWebNamespace:
+  #   Type: AWS::SSM::Parameter
+  #   Properties:
+  #     Type: String
+  #     Name: UnicornWebNamespace
+  #     Value: "UnicornWeb"
+
   #### LAMBDA FUNCTIONS
   # Processes customer API requests from SQS queue UnicornContractsIngestQueue
   ContractEventHandlerFunction:

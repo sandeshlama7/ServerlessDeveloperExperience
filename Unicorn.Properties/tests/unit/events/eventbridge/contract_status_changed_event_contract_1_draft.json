@@ -1,8 +1,8 @@
 [
   {
     "DetailType": "ContractStatusChanged",
-    "Source": "unicorn.contracts",
-    "EventBusName": "UnicornPropertiesEventBus-Local",
-    "Detail": "{ \"contract_updated_on\": \"10/08/2022 19:56:30\", \"contract_id\": \"f2bedc80-3dc8-4544-9140-9b606d71a6ee\", \"property_id\": \"usa/anytown/main-street/111\", \"contract_status\": \"DRAFT\" }"
+    "Source": "uni-prop-prod-shared",
+    "EventBusName": "UnicornContractsBus-local-Sandesh",
+    "Detail": "{ \"contract_updated_on\": \"25/08/2024 07:55:30\", \"contract_id\": \"f2bedc80-3dc8-4544-9140-9b606d71a6ef\", \"property_id\": \"usa/anytown/main-street9/219\", \"contract_status\": \"DRAFT\" }"
   }
 ]
